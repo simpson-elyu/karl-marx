@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karl Marx Puzzle: The Engine of History</title>
+    <style>
+        /* --- General Styles --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .puzzle-container {
+            width: 100%;
+            max-width: 1200px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #b33939; /* A reddish tone */
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        /* --- Diagram Area (Left Side) --- */
+        .diagram-area {
+            flex: 3;
+            min-width: 400px;
+        }
+        
+        /* --- Pyramid Structure --- */
+        .pyramid-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            padding: 20px 0;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .superstructure {
+            width: 80%;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 40px solid #fde4e4;
+            position: relative;
+            margin-bottom: -1px; /* Overlap with base */
+        }
+
+        .base {
+            width: 100%;
+            background-color: #e4e9fd;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 2px solid #aab6fe;
+        }
+        
+        .pyramid-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        #superstructure-top { margin-top: -30px; } /* Pull B up */
+        #superstructure-mid { padding: 0 15%; }
+        
+        /* --- Drop Zones --- */
+        .drop-zone {
+            border: 2px dashed #aaa;
+            border-radius: 5px;
+            padding: 10px;
+            min-height: 70px;
+            min-width: 120px;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #ccc;
+            background-color: #fafafa;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .drop-zone.drag-over {
+            background-color: #e0e0e0;
+            border-color: #b33939;
+        }
+        .drop-zone.correct {
+            border: 3px solid #2ecc71; /* Green */
+            background-color: #e8f8f5;
+        }
+        .drop-zone.incorrect {
+            border: 3px solid #e74c3c; /* Red */
+            background-color: #fdedec;
+        }
+        /* Make drop zones take over children's pointer events */
+        .drop-zone > * { pointer-events: none; }
+
+        /* --- Mechanism of Change --- */
+        .change-mechanism {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+        .arrow { font-size: 2em; color: #b33939; }
+
+        /* --- Concept Bank (Right Side) --- */
+        .concept-bank {
+            flex: 2;
+            min-width: 300px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #bank-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* --- Draggable Items --- */
+        .draggable {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-left: 5px solid #3498db;
+            border-radius: 4px;
+            padding: 10px;
+            cursor: grab;
+            transition: box-shadow 0.2s, opacity 0.2s;
+            user-select: none;
+        }
+        .draggable:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .draggable strong { color: #2980b9; }
+        .draggable.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* --- Buttons and Feedback --- */
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.2s;
+        }
+        #check-btn { background-color: #27ae60; color: white; }
+        #check-btn:hover { background-color: #229954; }
+        #reset-btn { background-color: #e74c3c; color: white; }
+        #reset-btn:hover { background-color: #c0392b; }
+        #feedback {
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        /* --- Solution Area --- */
+        .solution {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fffbe6;
+            border: 1px solid #fdd835;
+            border-radius: 5px;
+            display: none; /* Hidden by default */
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .diagram-area, .concept-bank {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="puzzle-container">
+    <h1>The Engine of History</h1>
+    <p>Drag the concepts from the bank on the right into the correct slots in the diagram to model Karl Marx's theory of historical materialism.</p>
+
+    <div class="main-content">
+        <!-- Diagram Area -->
+        <div class="diagram-area">
+            <h2>The Structure of Society & The Engine of Change</h2>
+
+            <!-- Part 1: The Pyramid -->
+            <div class="pyramid-diagram">
+                <div class="superstructure">
+                    <div class="pyramid-row" id="superstructure-top">
+                        <div class="drop-zone" id="slot-B" data-correct="ideology">B</div>
+                    </div>
+                    <div class="pyramid-row" id="superstructure-mid">
+                        <div class="drop-zone" id="slot-A" data-correct="state">A</div>
+                        <div class="drop-zone" id="slot-C" data-correct="culture">C</div>
+                    </div>
+                </div>
+                <div class="base">
+                    <div class="pyramid-row">
+                        <div class="drop-zone" id="slot-D" data-correct="factories">D</div>
+                        <div class="drop-zone" id="slot-E" data-correct="resources">E</div>
+                    </div>
+                    <div class="pyramid-row">
+                        <div class="drop-zone" id="slot-F" data-correct="relations">F</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 2: Mechanism of Change -->
+            <div class="change-mechanism">
+                <div class="drop-zone" id="slot-G" data-correct="struggle">G</div>
+                <div class="arrow">→</div>
+                <div class="drop-zone" id="slot-H" data-correct="revolution">H</div>
+                <div class="arrow">→</div>
+                <div>A New Epoch</div>
+            </div>
+        </div>
+
+        <!-- Concept Bank -->
+        <aside class="concept-bank">
+            <h2>Concept Bank</h2>
+            <div id="bank-items">
+                <div class="draggable" draggable="true" id="factories"><strong>Factories & Tools</strong><p>The physical instruments of production.</p></div>
+                <div class="draggable" draggable="true" id="relations"><strong>Class Relations</strong><p>The relationship between owners and workers.</p></div>
+                <div class="draggable" draggable="true" id="state"><strong>The State & Law</strong><p>Government, police, and legal system.</p></div>
+                <div class="draggable" draggable="true" id="culture"><strong>Art & Culture</strong><p>Prevailing art, norms, and entertainment.</p></div>
+                <div class="draggable" draggable="true" id="ideology"><strong>Dominant Ideology</strong><p>Beliefs that justify the current system.</p></div>
+                <div class="draggable" draggable="true" id="struggle"><strong>Class Struggle</strong><p>The conflict of interests between classes.</p></div>
+                <div class="draggable" draggable="true" id="revolution"><strong>Revolution</strong><p>The forceful overthrow of the existing order.</p></div>
+                <div class="draggable" draggable="true" id="resources"><strong>Land & Resources</strong><p>The natural materials used in production.</p></div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Controls and Feedback -->
+    <div class="controls">
+        <button id="check-btn">Check Answers</button>
+        <button id="reset-btn">Reset</button>
+        <div id="feedback"></div>
+    </div>
+    
+    <!-- Solution Section -->
+    <div class="solution" id="solution-section">
+        <h3>Explanation</h3>
+        <p>Marx's theory posits that a society's economic <strong>Base</strong> (the means and relations of production) determines its <strong>Superstructure</strong> (politics, law, culture, and ideology).</p>
+        <ul>
+            <li><strong>The Base (Foundation):</strong>
+                <ul>
+                    <li>(D) <strong>Factories & Tools</strong> and (E) <strong>Land & Resources</strong> are the <em>Means of Production</em>.</li>
+                    <li>(F) <strong>Class Relations</strong> are the <em>Relations of Production</em>, defining who owns the means and who works them.</li>
+                </ul>
+            </li>
+            <li><strong>The Superstructure (Built on top):</strong>
+                <ul>
+                    <li>(A) <strong>The State & Law</strong> and (C) <strong>Art & Culture</strong> are institutions that reflect and protect the economic base.</li>
+                    <li>(B) <strong>Dominant Ideology</strong> is the capstone, making the unequal relations seem natural and inevitable.</li>
+                </ul>
+            </li>
+            <li><strong>The Engine of Change:</strong>
+                <ul>
+                    <li>(G) <strong>Class Struggle</strong> is the inherent contradiction within capitalism. The conflict between the owners (Bourgeoisie) and workers (Proletariat) intensifies over time.</li>
+                    <li>(H) This struggle ultimately leads to a <strong>Revolution</strong>, which overthrows the old system and establishes a new economic base, leading to a new historical epoch.</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const draggables = document.querySelectorAll('.draggable');
+    const dropZones = document.querySelectorAll('.drop-zone');
+    const checkBtn = document.getElementById('check-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const feedbackEl = document.getElementById('feedback');
+    const solutionSection = document.getElementById('solution-section');
+    const conceptBank = document.getElementById('bank-items');
+
+    // Store original positions for reset
+    const originalParents = new Map();
+    draggables.forEach(draggable => {
+        originalParents.set(draggable.id, draggable.parentElement);
+    });
+
+    // --- Drag and Drop Event Listeners ---
+    draggables.forEach(draggable => {
+        draggable.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', e.target.id);
+            setTimeout(() => {
+                e.target.classList.add('dragging');
+            }, 0);
+        });
+
+        draggable.addEventListener('dragend', (e) => {
+            e.target.classList.remove('dragging');
+        });
+    });
+
+    dropZones.forEach(zone => {
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault(); // This is necessary to allow dropping
+            zone.classList.add('drag-over');
+        });
+
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('drag-over');
+        });
+
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            const id = e.dataTransfer.getData('text/plain');
+            const draggableElement = document.getElementById(id);
+
+            // If the drop zone already has a child, swap it back to the bank
+            if (zone.children.length > 0) {
+                conceptBank.appendChild(zone.firstElementChild);
+            }
+            
+            // Drop the new element
+            zone.appendChild(draggableElement);
+            // Clear the letter (A, B, C...) after dropping
+            zone.style.color = 'transparent'; 
+        });
+    });
+
+    // --- Button Logic ---
+    checkBtn.addEventListener('click', () => {
+        let correctCount = 0;
+        let totalDropped = 0;
+        
+        dropZones.forEach(zone => {
+            zone.classList.remove('correct', 'incorrect'); // Reset classes
+            const placedItem = zone.querySelector('.draggable');
+            
+            if (placedItem) {
+                totalDropped++;
+                const isCorrect = placedItem.id === zone.dataset.correct;
+                if (isCorrect) {
+                    zone.classList.add('correct');
+                    correctCount++;
+                } else {
+                    zone.classList.add('incorrect');
+                }
+            }
+        });
+        
+        if (totalDropped < dropZones.length) {
+            feedbackEl.textContent = `You've placed ${totalDropped} out of ${dropZones.length}. Please complete the puzzle.`;
+            feedbackEl.style.color = '#e67e22';
+        } else {
+            feedbackEl.textContent = `You got ${correctCount} out of ${dropZones.length} correct!`;
+            feedbackEl.style.color = correctCount === dropZones.length ? '#27ae60' : '#e74c3c';
+            solutionSection.style.display = 'block'; // Show solution after check
+        }
+    });
+
+    resetBtn.addEventListener('click', () => {
+        // Clear all drop zones and move items back to the bank
+        dropZones.forEach(zone => {
+            if (zone.children.length > 0) {
+                const originalParent = originalParents.get(zone.firstElementChild.id);
+                originalParent.appendChild(zone.firstElementChild);
+            }
+            zone.classList.remove('correct', 'incorrect', 'drag-over');
+            zone.style.color = ''; // Restore letter color
+        });
+
+        // Hide feedback and solution
+        feedbackEl.textContent = '';
+        solutionSection.style.display = 'none';
+    });
+});
+</script>
+
+</body>
+</html>
